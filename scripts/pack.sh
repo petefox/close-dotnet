@@ -17,5 +17,6 @@ cat > global.json <<'JSON'
 }
 JSON
 dotnet restore "$root/src/Close.DotNet" --locked-mode --configfile "$root/NuGet.Config"
+# RepositoryUrl is explicit in the project. Skip the checkout-specific branch attribute.
 dotnet pack "$root/src/Close.DotNet" --configuration Release --no-build \
-  -p:DeterministicTimestamp="$timestamp" -p:RepositoryBranch= --output "$destination"
+  -p:DeterministicTimestamp="$timestamp" -p:PublishRepositoryUrl=false --output "$destination"

@@ -42,10 +42,22 @@ jobs:
           args=(--upstream)
           [[ "$TAG" == *-beta.* ]] || args+=(--stable)
           python3 scripts/coverage.py "${args[@]}"
+          if [[ "$TAG" != *-beta.* && -f scripts/generate-endpoints.py ]]; then
+            spec="$(mktemp)"
+            trap 'rm -f "$spec"' EXIT
+            curl --fail --silent --show-error --max-time 30 https://api.close.com/api/openapi.json --output "$spec"
+            python3 scripts/generate-endpoints.py "$spec" --check
+          fi
       - run: dotnet restore --locked-mode
       - run: dotnet build Close.DotNet.slnx --configuration Release --no-restore
       - run: dotnet test --solution Close.DotNet.slnx --configuration Release --no-build
-      - run: dotnet pack src/Close.DotNet --configuration Release --no-build --output artifacts/release
+      - name: Pack the tagged build
+        run: |
+          if [[ -f scripts/pack.sh ]]; then
+            bash scripts/pack.sh artifacts/release
+          else
+            dotnet pack src/Close.DotNet --configuration Release --no-build --output artifacts/release
+          fi
       - name: Check package version and run the consumer smoke tests
         env:
           TAG: ${{ inputs.tag }}
@@ -54,6 +66,11 @@ jobs:
           test -f "artifacts/release/Close.DotNet.$version.nupkg"
           test -f "artifacts/release/Close.DotNet.$version.snupkg"
           bash scripts/smoke-package.sh "$version" artifacts/release net10.0 net11.0
+          if [[ -f src/Close.DotNet.AspNetCore/Close.DotNet.AspNetCore.csproj ]]; then
+            test -f "artifacts/release/Close.DotNet.AspNetCore.$version.nupkg"
+            test -f "artifacts/release/Close.DotNet.AspNetCore.$version.snupkg"
+            CLOSE_SMOKE_ASPNETCORE=1 bash scripts/smoke-package.sh "$version" artifacts/release net10.0 net11.0
+          fi
           cp docs/coverage.md artifacts/release/endpoint-coverage.md
           awk -v heading="## $version" '$0 == heading { found=1; next } /^## / && found { exit } found' CHANGELOG.md > artifacts/release/release-notes.md
           grep -q '[^[:space:]]' artifacts/release/release-notes.md
@@ -87,4 +104,9 @@ jobs:
           gh release create "$TAG" Close.DotNet.* endpoint-coverage.md SHA256SUMS \
             --verify-tag --draft --title "$TAG" --notes-file release-notes.md "${args[@]}"
           gh release edit "$TAG" --draft=false
-          gh release verify "$TAG"
+          # The attestation may take a few seconds to appear after publication.
+          for attempt in {1..12}; do
+            if gh release verify "$TAG"; then exit 0; fi
+            sleep 5
+          done
+          exit 1

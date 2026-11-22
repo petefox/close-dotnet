@@ -3,7 +3,7 @@
 Close.DotNet is an independent SDK for integrating with Close CRM from .NET 10 and 11.
 
 1. Create a Close API key in your development organization.
-2. Add the beta package with `dotnet add package Close.DotNet --version 1.0.0-beta.1`.
+2. Add the package with `dotnet add package Close.DotNet --version 1.0.0`.
 3. Set `CLOSE_API_KEY` in your environment and make a read-only call.
 
 ~~~csharp

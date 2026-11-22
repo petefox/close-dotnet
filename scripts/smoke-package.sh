@@ -17,8 +17,17 @@ trap 'rm -rf "$scratch"' EXIT
 cd "$scratch"
 export NUGET_PACKAGES="$scratch/packages"
 
+sdk="Microsoft.NET.Sdk"
+web_reference=""
+web_pattern=""
+if [[ "${CLOSE_SMOKE_ASPNETCORE:-0}" == 1 ]]; then
+  sdk="Microsoft.NET.Sdk.Web"
+  web_reference="<PackageReference Include=\"Close.DotNet.AspNetCore\" Version=\"[$version]\" />"
+  web_pattern='<package pattern="Close.DotNet.AspNetCore" />'
+fi
+
 cat > Consumer.csproj <<EOF
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="$sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>$(IFS=';'; echo "$*")</TargetFrameworks>
@@ -28,6 +37,7 @@ cat > Consumer.csproj <<EOF
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Close.DotNet" Version="[$version]" />
+    $web_reference
   </ItemGroup>
 </Project>
 EOF
@@ -38,11 +48,17 @@ if [[ "$source" == "$feed" ]]; then
 else
   mkdir feed
   cp "$source/Close.DotNet.$version.nupkg" feed/
+  if [[ -n "$web_reference" ]]; then
+    cp "$source/Close.DotNet.AspNetCore.$version.nupkg" feed/
+  fi
   package_sources="<clear /><add key=\"package-under-test\" value=\"feed\" /><add key=\"nuget.org\" value=\"$feed\" />"
-  source_mapping='<packageSourceMapping>
-    <packageSource key="package-under-test"><package pattern="Close.DotNet" /></packageSource>
+  source_mapping="$(cat <<EOF
+  <packageSourceMapping>
+    <packageSource key="package-under-test"><package pattern="Close.DotNet" />$web_pattern</packageSource>
     <packageSource key="nuget.org"><package pattern="*" /></packageSource>
-  </packageSourceMapping>'
+  </packageSourceMapping>
+EOF
+)"
 fi
 
 cat > NuGet.Config <<EOF
@@ -79,6 +95,23 @@ sealed class Fixture : HttpMessageHandler
     }
 }
 EOF
+
+if [[ -n "$web_reference" ]]; then
+  cat > Program.cs <<'EOF'
+using System.Runtime.InteropServices;
+using Close.DotNet.AspNetCore;
+using Microsoft.AspNetCore.Routing;
+
+var builder = WebApplication.CreateSlimBuilder();
+await using var app = builder.Build();
+app.MapCloseWebhook("/hooks/close", "01020304", (_, _) => Task.CompletedTask);
+var route = ((IEndpointRouteBuilder)app).DataSources.SelectMany(source => source.Endpoints)
+    .OfType<RouteEndpoint>().Single();
+if (route.RoutePattern.RawText != "/hooks/close")
+    throw new InvalidOperationException("The packaged webhook helper did not map the endpoint.");
+Console.WriteLine($"Webhook package smoke test passed on {RuntimeInformation.FrameworkDescription}.");
+EOF
+fi
 
 dotnet restore --configfile NuGet.Config
 for framework in "$@"; do

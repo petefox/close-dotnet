@@ -5,7 +5,7 @@ An independent C# SDK for the [Close CRM REST API](https://developer.close.com/)
 ## Install
 
 ~~~bash
-dotnet add package Close.DotNet --version 1.0.0-beta.1
+dotnet add package Close.DotNet --version 1.0.0
 ~~~
 
 ## Make your first request
@@ -36,7 +36,9 @@ await foreach (var lead in close.Leads.ListAsync(new()
 }
 ~~~
 
-The beta includes leads, contacts, opportunities, tasks, notes, advanced search, event history, webhook subscriptions, and OAuth. For other REST routes, call `close.SendAsync(HttpMethod.Get, "pipeline/")` with a path relative to the API root.
+The SDK has named methods for all 308 documented REST operations, plus OAuth, webhook verification, and streamed file transfers. Use `CloseClient.SendAsync` when you need to call a newly documented route ahead of the next SDK release.
+
+ASP.NET Core apps can install `Close.DotNet.AspNetCore` to register a signed webhook endpoint with `app.MapCloseWebhook(...)`.
 
 - [Tutorials and C# API reference](https://petefox.github.io/close-dotnet/)
 - [Endpoint coverage](https://github.com/petefox/close-dotnet/blob/main/docs/coverage.md)

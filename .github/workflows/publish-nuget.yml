@@ -48,14 +48,42 @@ jobs:
         id: nuget
         with:
           user: ${{ secrets.NUGET_USER }}
-      - name: Push and verify the package
+      - name: Push the packages and symbols
         env:
           NUGET_KEY: ${{ steps.nuget.outputs.NUGET_API_KEY }}
           TAG: ${{ inputs.tag }}
         run: |
           feed=https://api.nuget.org/v3/index.json
           version="${TAG#v}"
-          dotnet nuget push "artifacts/nuget/Close.DotNet.$version.nupkg" --source "$feed" --api-key "$NUGET_KEY"
-          curl --fail --silent --show-error --retry 18 --retry-all-errors --retry-delay 10 \
-            "https://api.nuget.org/v3-flatcontainer/close.dotnet/$version/close.dotnet.$version.nupkg" --output /dev/null
+          core="artifacts/nuget/Close.DotNet.$version.nupkg"
+          dotnet nuget push "$core" --source "$feed" --api-key "$NUGET_KEY"
+          webhooks="artifacts/nuget/Close.DotNet.AspNetCore.$version.nupkg"
+          if [[ -f "$webhooks" ]]; then
+            dotnet nuget push "$webhooks" --source "$feed" --api-key "$NUGET_KEY"
+          fi
+      - name: Verify installation from NuGet.org
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          feed=https://api.nuget.org/v3/index.json
+          version="${TAG#v}"
+
+          wait_for_package() {
+            local id="$1"
+            local url="https://api.nuget.org/v3-flatcontainer/$id/$version/$id.$version.nupkg"
+            for attempt in {1..60}; do
+              if curl -fsS --max-time 15 "$url" --output /dev/null 2>/dev/null; then
+                return 0
+              fi
+              sleep 15
+            done
+            echo "::error::$id $version was pushed and is still unavailable in the public feed."
+            return 1
+          }
+
+          wait_for_package close.dotnet
           bash scripts/smoke-package.sh "$version" "$feed" net10.0 net11.0
+          if [[ -f "artifacts/nuget/Close.DotNet.AspNetCore.$version.nupkg" ]]; then
+            wait_for_package close.dotnet.aspnetcore
+            CLOSE_SMOKE_ASPNETCORE=1 bash scripts/smoke-package.sh "$version" "$feed" net10.0 net11.0
+          fi

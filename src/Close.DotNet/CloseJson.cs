@@ -30,6 +30,8 @@ namespace Close.DotNet;
 [JsonSerializable(typeof(CloseSearchRequest))]
 [JsonSerializable(typeof(CloseWebhookDelivery))]
 [JsonSerializable(typeof(CloseOAuthTokens))]
+[JsonSerializable(typeof(CloseUploadRequest))]
+[JsonSerializable(typeof(CloseUploadTicket))]
 [JsonSerializable(typeof(Lead))]
 [JsonSerializable(typeof(ClosePage<Lead>))]
 [JsonSerializable(typeof(Contact))]

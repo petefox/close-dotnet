@@ -24,7 +24,27 @@ var subscription = await close.Webhooks.CreateAsync(new()
 }, cancellationToken: cancellationToken);
 ~~~
 
-Store the returned `SignatureKey` as `Close:WebhookSigningKey` in the receiver's secret configuration. The sample verifies the original bytes against the signature headers, stores the event once per ID, and replies with HTTP 202. Incoming bodies are limited to 1 MiB. The sample's encrypted inbox is in `.local/inbox/`. A deployed receiver can replace that with the application's durable queue.
+Install the optional ASP.NET Core integration and set `Close:WebhookSigningKey` to the subscription's `SignatureKey` in user secrets or the production secret store.
+
+~~~bash
+dotnet add package Close.DotNet.AspNetCore --version 1.0.0
+~~~
+
+~~~csharp
+using Close.DotNet.AspNetCore;
+
+var key = app.Configuration["Close:WebhookSigningKey"]
+    ?? throw new InvalidOperationException("Configure the Close signing key.");
+
+app.MapCloseWebhook("/webhook", key, async (request, token) =>
+{
+    await queue.EnqueueAsync(request.Event, token);
+}).AllowAnonymous();
+~~~
+
+Set the subscription URL to the mapped route. The helper validates the signature against the original bytes before invoking your handler. It limits incoming bodies to 1 MiB by default and returns HTTP 204 after your callback completes. A handler exception returns an error so Close can retry. Use `CloseWebhookEndpointOptions` to change the body limit or set an optional signature freshness window.
+
+The sample uses the helper to write each event once to an encrypted inbox in `.local/inbox/`. Replace that inbox with your application's durable queue in a deployed receiver. The key resolver overload supports separate subscriptions with keys from trusted route configuration.
 
 Close may deliver an event more than once. Keep processing idempotent and use the event log for missed deliveries within its documented retention window. Remove the test subscription with `close.Webhooks.DeleteAsync(subscription.Id!)` after the tutorial.
 

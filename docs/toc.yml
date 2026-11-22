@@ -8,6 +8,8 @@
   href: guides/oauth.md
 - name: Events and webhooks
   href: guides/sync.md
+- name: File uploads and exports
+  href: guides/files.md
 - name: Endpoint coverage
   href: coverage.md
 - name: C# API reference

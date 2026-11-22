@@ -1,0 +1,61 @@
+name: Publish to NuGet
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Published immutable GitHub release tag
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nuget-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: nuget
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          global-json-file: global.json
+          dotnet-version: 11.0.x
+      - name: Download the previously tested immutable package
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-beta\.[0-9]+)?$ ]]
+          gh release verify "$TAG"
+          gh release download "$TAG" --dir artifacts/nuget --pattern 'Close.DotNet.*' --pattern SHA256SUMS
+          (cd artifacts/nuget && sha256sum --check SHA256SUMS)
+          for asset in artifacts/nuget/Close.DotNet.*; do
+            gh release verify-asset "$TAG" "$asset"
+          done
+      - name: Obtain a short-lived NuGet key
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1
+        id: nuget
+        with:
+          user: ${{ secrets.NUGET_USER }}
+      - name: Push and verify the package
+        env:
+          NUGET_KEY: ${{ steps.nuget.outputs.NUGET_API_KEY }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          feed=https://api.nuget.org/v3/index.json
+          version="${TAG#v}"
+          dotnet nuget push "artifacts/nuget/Close.DotNet.$version.nupkg" --source "$feed" --api-key "$NUGET_KEY"
+          curl --fail --silent --show-error --retry 18 --retry-all-errors --retry-delay 10 \
+            "https://api.nuget.org/v3-flatcontainer/close.dotnet/$version/close.dotnet.$version.nupkg" --output /dev/null
+          bash scripts/smoke-package.sh "$version" "$feed" net10.0 net11.0

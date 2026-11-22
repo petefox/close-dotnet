@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Close.DotNet\Close.DotNet.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <UserSecretsId>Close.DotNet.OAuthAndWebhooks</UserSecretsId>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/OAuthAndWebhooks/OAuthAndWebhooks.csproj" />
+    <Project Path="samples/Quickstart/Quickstart.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Close.DotNet/Close.DotNet.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Close.DotNet.Tests/Close.DotNet.Tests.csproj" />
+  </Folder>
+</Solution>

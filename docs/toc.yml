@@ -1,0 +1,14 @@
+- name: Get started
+  href: index.md
+- name: Core CRM records
+  href: guides/crm.md
+- name: Advanced search
+  href: guides/search.md
+- name: OAuth in ASP.NET Core
+  href: guides/oauth.md
+- name: Events and webhooks
+  href: guides/sync.md
+- name: Endpoint coverage
+  href: coverage.md
+- name: C# API reference
+  href: api/toc.yml

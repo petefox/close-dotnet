@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+.vs/
+.idea/
+*.user
+.DS_Store
+.env
+.env.*
+/artifacts/
+/docs/_site/
+/docs/api/
+/docs/_sitecheck/
+/samples/OAuthAndWebhooks/.local/

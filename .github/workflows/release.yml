@@ -51,7 +51,13 @@ jobs:
       - run: dotnet restore --locked-mode
       - run: dotnet build Close.DotNet.slnx --configuration Release --no-restore
       - run: dotnet test --solution Close.DotNet.slnx --configuration Release --no-build
-      - run: dotnet pack src/Close.DotNet --configuration Release --no-build --output artifacts/release
+      - name: Pack the tagged build
+        run: |
+          if [[ -f scripts/pack.sh ]]; then
+            bash scripts/pack.sh artifacts/release
+          else
+            dotnet pack src/Close.DotNet --configuration Release --no-build --output artifacts/release
+          fi
       - name: Check package version and run the consumer smoke tests
         env:
           TAG: ${{ inputs.tag }}

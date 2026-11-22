@@ -7,3 +7,7 @@
 5. Verify the GitHub release, the NuGet listing and symbols, and the public documentation site. Correct a released package by issuing a new version.
 
 [NuGet Trusted Publishing setup](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) · [GitHub immutable releases](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/establish-provenance-and-integrity/prevent-release-changes)
+
+Run `bash scripts/pack.sh artifacts/packages` after the Release build to reproduce a 1.0 or later package. It uses the .NET 11 packaging SDK and the tagged commit timestamp.
+
+[Deterministic NuGet packages](https://learn.microsoft.com/nuget/create-packages/deterministic-packages)

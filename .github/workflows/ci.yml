@@ -45,7 +45,7 @@ jobs:
       - run: python3 scripts/coverage.py
       - run: dotnet restore --locked-mode
       - run: dotnet build Close.DotNet.slnx --configuration Release --no-restore
-      - run: dotnet pack src/Close.DotNet --configuration Release --no-build --output artifacts/packages
+      - run: bash scripts/pack.sh artifacts/packages
       - name: Run a clean package consumer on .NET 10 and 11
         run: |
           package=(artifacts/packages/Close.DotNet.*.nupkg)

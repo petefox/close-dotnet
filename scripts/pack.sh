@@ -18,4 +18,4 @@ cat > global.json <<'JSON'
 JSON
 dotnet restore "$root/src/Close.DotNet" --locked-mode --configfile "$root/NuGet.Config"
 dotnet pack "$root/src/Close.DotNet" --configuration Release --no-build \
-  -p:DeterministicTimestamp="$timestamp" --output "$destination"
+  -p:DeterministicTimestamp="$timestamp" -p:RepositoryBranch= --output "$destination"

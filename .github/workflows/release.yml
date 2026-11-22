@@ -42,6 +42,12 @@ jobs:
           args=(--upstream)
           [[ "$TAG" == *-beta.* ]] || args+=(--stable)
           python3 scripts/coverage.py "${args[@]}"
+          if [[ "$TAG" != *-beta.* && -f scripts/generate-endpoints.py ]]; then
+            spec="$(mktemp)"
+            trap 'rm -f "$spec"' EXIT
+            curl --fail --silent --show-error --max-time 30 https://api.close.com/api/openapi.json --output "$spec"
+            python3 scripts/generate-endpoints.py "$spec" --check
+          fi
       - run: dotnet restore --locked-mode
       - run: dotnet build Close.DotNet.slnx --configuration Release --no-restore
       - run: dotnet test --solution Close.DotNet.slnx --configuration Release --no-build
@@ -87,4 +93,9 @@ jobs:
           gh release create "$TAG" Close.DotNet.* endpoint-coverage.md SHA256SUMS \
             --verify-tag --draft --title "$TAG" --notes-file release-notes.md "${args[@]}"
           gh release edit "$TAG" --draft=false
-          gh release verify "$TAG"
+          # The attestation may take a few seconds to appear after publication.
+          for attempt in {1..12}; do
+            if gh release verify "$TAG"; then exit 0; fi
+            sleep 5
+          done
+          exit 1

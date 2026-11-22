@@ -15,6 +15,8 @@ public class CloseResource<T, TCreate, TUpdate> where T : CloseObject
     private readonly CloseTransport transport;
     private readonly string path;
 
+    private protected CloseTransport Transport => transport;
+
     internal CloseResource(CloseTransport transport, string path)
     {
         this.transport = transport;
@@ -48,26 +50,8 @@ public class CloseResource<T, TCreate, TUpdate> where T : CloseObject
     }
 
     /// <summary>Enumerates list results, fetching a page only when needed.</summary>
-    public async IAsyncEnumerable<T> ListAsync(CloseListOptions? options = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
-    {
-        options ??= new();
-        var query = options.ToQuery();
-        var skip = options.Skip;
-        while (true)
-        {
-            var page = await ReadPageAsync(query, skip, options.Limit, cancellationToken).ConfigureAwait(false);
-            foreach (var item in page.Data)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                yield return item;
-            }
-
-            if (!page.HasMore) yield break;
-            if (page.Data.Count == 0)
-                throw new InvalidOperationException("Close reported more items without advancing the offset.");
-            skip = checked(skip + page.Data.Count);
-        }
-    }
+    public IAsyncEnumerable<T> ListAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
+        CloseRoutes.StreamOffsetAsync(options ?? new(), ReadPageAsync, cancellationToken);
 
     private async Task<T> ReadAsync(HttpMethod method, string route, CloseRequestOptions? options, byte[]? body, CancellationToken token) =>
         (await transport.SendAsync(method, route, options?.ToQuery(), body, CloseJson.Type<T>(), method == HttpMethod.Get, token)
@@ -75,10 +59,7 @@ public class CloseResource<T, TCreate, TUpdate> where T : CloseObject
 
     private async Task<ClosePage<T>> ReadPageAsync(Dictionary<string, string?> query, int skip, int? limit, CancellationToken token)
     {
-        ArgumentOutOfRangeException.ThrowIfNegative(skip);
-        if (limit is { } size) ArgumentOutOfRangeException.ThrowIfNegativeOrZero(size);
-        query["_skip"] = skip.ToString(CultureInfo.InvariantCulture);
-        if (limit is { } pageSize) query["_limit"] = pageSize.ToString(CultureInfo.InvariantCulture);
+        CloseRoutes.SetOffset(query, skip, limit);
         var page = (await transport.SendAsync(HttpMethod.Get, path, query, null, CloseJson.Type<ClosePage<T>>(), true, token)
             .ConfigureAwait(false)).RequireData();
         return page.Data is not null ? page : throw new InvalidOperationException("Close returned a null list.");
@@ -92,7 +73,7 @@ public class CloseResource<T, TCreate, TUpdate> where T : CloseObject
 }
 
 /// <summary>Lead records.</summary>
-public sealed class LeadsClient : CloseResource<Lead, CreateLeadRequest, UpdateLeadRequest>
+public sealed partial class LeadsClient : CloseResource<Lead, CreateLeadRequest, UpdateLeadRequest>
 {
     internal LeadsClient(CloseTransport transport) : base(transport, "lead/") { }
 }
@@ -110,7 +91,7 @@ public sealed class OpportunitiesClient : CloseResource<Opportunity, CreateOppor
 }
 
 /// <summary>Tasks on leads and contacts.</summary>
-public sealed class TasksClient : CloseResource<CloseTask, CreateTaskRequest, UpdateTaskRequest>
+public sealed partial class TasksClient : CloseResource<CloseTask, CreateTaskRequest, UpdateTaskRequest>
 {
     internal TasksClient(CloseTransport transport) : base(transport, "task/") { }
 }
@@ -128,7 +109,7 @@ public sealed class WebhooksClient : CloseResource<WebhookSubscription, CreateWe
 }
 
 /// <summary>User endpoints.</summary>
-public sealed class UsersClient
+public sealed partial class UsersClient
 {
     private readonly CloseTransport transport;
 
@@ -155,6 +136,36 @@ internal static class CloseRoutes
     internal static T RequireData<T>(this CloseResponse<T?> response) where T : class =>
         response.Data ?? throw new CloseApiException(response.StatusCode, response.RequestId, response.RateLimit,
             responseProblem: "Close returned an empty response where JSON was expected.");
+
+    internal static void SetOffset(Dictionary<string, string?> query, int skip, int? limit)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(skip);
+        if (limit is { } size) ArgumentOutOfRangeException.ThrowIfNegativeOrZero(size);
+        query["_skip"] = skip.ToString(CultureInfo.InvariantCulture);
+        if (limit is { } pageSize) query["_limit"] = pageSize.ToString(CultureInfo.InvariantCulture);
+    }
+
+    internal static async IAsyncEnumerable<T> StreamOffsetAsync<T>(
+        CloseListOptions options, Func<Dictionary<string, string?>, int, int?, CancellationToken, Task<ClosePage<T>>> fetch,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        var query = options.ToQuery();
+        var skip = options.Skip;
+        while (true)
+        {
+            var page = await fetch(query, skip, options.Limit, cancellationToken).ConfigureAwait(false);
+            foreach (var item in page.Data)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                yield return item;
+            }
+
+            if (!page.HasMore) yield break;
+            if (page.Data.Count == 0)
+                throw new InvalidOperationException("Close reported more items without advancing the offset.");
+            skip = checked(skip + page.Data.Count);
+        }
+    }
 
     internal static async IAsyncEnumerable<T> StreamCursorAsync<T>(
         string? cursor, Func<string?, CancellationToken, Task<(IReadOnlyList<T> Data, string? Next)>> fetch,

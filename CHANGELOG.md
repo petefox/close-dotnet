@@ -5,6 +5,7 @@
 - Add named methods for all 308 documented Close REST operations.
 - Add typed models for documented payloads and JSON access for dynamic fields and variant shapes.
 - Add async streams for documented offset-paginated endpoints outside the original beta scope.
+- Add `MapCloseWebhook` through the optional ASP.NET Core package.
 - Add streamed attachment uploads and export downloads using a dedicated storage connection.
 
 ## 1.0.0-beta.1

@@ -23,7 +23,7 @@ jobs:
         with:
           global-json-file: global.json
       - run: dotnet restore --locked-mode
-      - run: dotnet build src/Close.DotNet --configuration Release --no-restore
+      - run: dotnet build Close.DotNet.slnx --configuration Release --no-restore
       - run: dotnet tool restore
       - run: dotnet docfx docs/docfx.json --warningsAsErrors
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4

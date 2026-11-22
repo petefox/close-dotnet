@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Close.DotNet;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Mvc;
+using Close.DotNet.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var localData = Path.Combine(builder.Environment.ContentRootPath, ".local");
@@ -70,30 +70,13 @@ app.MapGet("/me", async (HttpContext context, SampleStore store) =>
     }
 });
 
-app.MapPost("/webhook", async (HttpRequest request, SampleStore store, CancellationToken token) =>
+if (webhookKey is not null)
 {
-    if (webhookKey is null) return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
-
-    using var buffer = new MemoryStream();
-    await request.Body.CopyToAsync(buffer, token);
-    var payload = buffer.ToArray();
-    if (!CloseWebhook.VerifySignature(payload, request.Headers[CloseWebhook.TimestampHeader].ToString(),
-        request.Headers[CloseWebhook.SignatureHeader].ToString(), webhookKey))
-        return Results.Unauthorized();
-
-    CloseWebhookDelivery delivery;
-    try
+    app.MapCloseWebhook("/webhook", webhookKey, async (delivery, token) =>
     {
-        delivery = CloseWebhook.ReadDelivery(payload);
-    }
-    catch (System.Text.Json.JsonException)
-    {
-        return Results.BadRequest("Invalid Close delivery.");
-    }
-    if (delivery.Event?.Id is not { } eventId) return Results.BadRequest("Missing Close event ID.");
-
-    await store.EnqueueEventAsync(eventId, payload, token);
-    return Results.Accepted();
-}).WithMetadata(new RequestSizeLimitAttribute(1024 * 1024));
+        var store = delivery.Context.RequestServices.GetRequiredService<SampleStore>();
+        await store.EnqueueEventAsync(delivery.Event.Id!, delivery.RawBody.ToArray(), token);
+    }).AllowAnonymous();
+}
 
 app.Run();

@@ -38,6 +38,8 @@ await foreach (var lead in close.Leads.ListAsync(new()
 
 The SDK has named methods for all 308 documented REST operations, plus OAuth, webhook verification, and streamed file transfers. Use `CloseClient.SendAsync` when you need to call a newly documented route ahead of the next SDK release.
 
+ASP.NET Core apps can install `Close.DotNet.AspNetCore` to register a signed webhook endpoint with `app.MapCloseWebhook(...)`.
+
 - [Tutorials and C# API reference](https://petefox.github.io/close-dotnet/)
 - [Endpoint coverage](https://github.com/petefox/close-dotnet/blob/main/docs/coverage.md)
 - [Runnable samples](https://github.com/petefox/close-dotnet/tree/main/samples)

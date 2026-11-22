@@ -16,7 +16,10 @@ cat > global.json <<'JSON'
   "sdk": { "version": "11.0.100", "rollForward": "latestFeature", "allowPrerelease": false }
 }
 JSON
-dotnet restore "$root/src/Close.DotNet" --locked-mode --configfile "$root/NuGet.Config"
-# RepositoryUrl is explicit in the project. Skip the checkout-specific branch attribute.
-dotnet pack "$root/src/Close.DotNet" --configuration Release --no-build \
-  -p:DeterministicTimestamp="$timestamp" -p:PublishRepositoryUrl=false --output "$destination"
+for package in Close.DotNet Close.DotNet.AspNetCore; do
+  project="$root/src/$package"
+  dotnet restore "$project" --locked-mode --configfile "$root/NuGet.Config"
+  # RepositoryUrl is explicit in the project. Skip the checkout-specific branch attribute.
+  dotnet pack "$project" --configuration Release --no-build \
+    -p:DeterministicTimestamp="$timestamp" -p:PublishRepositoryUrl=false --output "$destination"
+done

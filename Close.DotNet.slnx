@@ -4,6 +4,7 @@
     <Project Path="samples/Quickstart/Quickstart.csproj" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/Close.DotNet.AspNetCore/Close.DotNet.AspNetCore.csproj" />
     <Project Path="src/Close.DotNet/Close.DotNet.csproj" />
   </Folder>
   <Folder Name="/tests/">

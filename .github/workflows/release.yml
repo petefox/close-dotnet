@@ -66,6 +66,11 @@ jobs:
           test -f "artifacts/release/Close.DotNet.$version.nupkg"
           test -f "artifacts/release/Close.DotNet.$version.snupkg"
           bash scripts/smoke-package.sh "$version" artifacts/release net10.0 net11.0
+          if [[ -f src/Close.DotNet.AspNetCore/Close.DotNet.AspNetCore.csproj ]]; then
+            test -f "artifacts/release/Close.DotNet.AspNetCore.$version.nupkg"
+            test -f "artifacts/release/Close.DotNet.AspNetCore.$version.snupkg"
+            CLOSE_SMOKE_ASPNETCORE=1 bash scripts/smoke-package.sh "$version" artifacts/release net10.0 net11.0
+          fi
           cp docs/coverage.md artifacts/release/endpoint-coverage.md
           awk -v heading="## $version" '$0 == heading { found=1; next } /^## / && found { exit } found' CHANGELOG.md > artifacts/release/release-notes.md
           grep -q '[^[:space:]]' artifacts/release/release-notes.md

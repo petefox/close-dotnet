@@ -11,3 +11,6 @@
 /docs/api/
 /docs/_sitecheck/
 /samples/OAuthAndWebhooks/.local/
+*.pfx
+*.p12
+*.key

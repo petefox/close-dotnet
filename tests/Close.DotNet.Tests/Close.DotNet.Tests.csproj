@@ -8,6 +8,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Close.DotNet\Close.DotNet.csproj" />
+    <ProjectReference Include="..\..\src\Close.DotNet.AspNetCore\Close.DotNet.AspNetCore.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="xunit.v3.mtp-v2" />

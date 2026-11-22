@@ -1,6 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <VersionPrefix>1.0.0</VersionPrefix>
     <Authors>Peter Schroeder</Authors>
     <Description>Independent .NET SDK for the Close CRM REST API.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

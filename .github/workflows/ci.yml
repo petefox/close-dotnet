@@ -48,9 +48,10 @@ jobs:
       - run: bash scripts/pack.sh artifacts/packages
       - name: Run a clean package consumer on .NET 10 and 11
         run: |
-          package=(artifacts/packages/Close.DotNet.*.nupkg)
+          package=(artifacts/packages/Close.DotNet.[0-9]*.nupkg)
           version="${package[0]#artifacts/packages/Close.DotNet.}"
           bash scripts/smoke-package.sh "${version%.nupkg}" artifacts/packages net10.0 net11.0
+          CLOSE_SMOKE_ASPNETCORE=1 bash scripts/smoke-package.sh "${version%.nupkg}" artifacts/packages net10.0 net11.0
       - run: dotnet tool restore
       - run: dotnet docfx docs/docfx.json --warningsAsErrors
 

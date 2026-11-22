@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <ItemGroup>
     <ProjectReference Include="..\..\src\Close.DotNet\Close.DotNet.csproj" />
+    <ProjectReference Include="..\..\src\Close.DotNet.AspNetCore\Close.DotNet.AspNetCore.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <IsPackable>false</IsPackable>

@@ -9,6 +9,8 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
+from query_options import QueryOptions
+
 ROOT = Path(__file__).resolve().parents[1]
 LIBRARY = ROOT / "src/Close.DotNet"
 TESTS = ROOT / "tests/Close.DotNet.Tests"
@@ -36,6 +38,30 @@ RENAMED_GROUPS = {
 MANUAL_GROUPS = {"Leads", "Tasks", "Users", "Files"}
 MANUAL_METHODS = {"files_create": "Files.CreateUploadAsync"}
 RENAMED_METHODS = {"leads_files_list": "ListFiles", "leads_files_create": "CreateFile"}
+CORE_OFFSET_LISTS = {"leads_list", "contacts_list", "opportunities_list", "tasks_list", "activities.notes_list", "webhooks_list"}
+
+# Preserve the 1.0 public properties independently of what future Close examples contain.
+LEGACY_CUSTOM_FIELD_IDS = (
+    "custom.cf_UpyNBvr6Rw8UBHh7zRboL3PYhbOVJl3XvwgPm3jg64S",
+    "custom.cf_cSh3fWT3rEJ1BFSezme2YAG6bPrZV5wUWKKrW4iN19g",
+    "custom.cf_jnxTQDKnSxCEBtD5dvZdNgTzC3CqeyWUyU349PBA9Wf",
+)
+LEGACY_CUSTOM_FIELDS = {
+    "CustomObjectsCreateRequest": {0: "array", 1: "string", 2: "string"},
+    "CustomObjectsCreateResponse": {0: "array", 1: "string", 2: "string"},
+    "CustomObjectsGetResponse": {2: "string"},
+    "CustomObjectsListResponseDataItem": {0: "string", 1: "string", 2: "string"},
+    "CustomObjectsUpdateRequest": {1: "string", 2: None},
+    "CustomObjectsUpdateResponse": {1: "string"},
+}
+CUSTOM_FIELD_REQUESTS = {
+    "CreateCustomActivity", "UpdateCustomActivity", "CustomObjectsCreateRequest", "CustomObjectsUpdateRequest",
+}
+CUSTOM_FIELD_RESPONSES = {
+    "CustomActivity", "CustomObjectsCreateResponse", "CustomObjectsGetResponse",
+    "CustomObjectsListResponseDataItem", "CustomObjectsUpdateResponse",
+}
+
 
 
 def pascal(name):
@@ -67,7 +93,8 @@ def literal_shape(value):
         # Lookup tables contain keys specific to the example's organization.
         if value and all(re.match(r"^(?:user|orga|lead|cont|oppo|stat|cf|acti|role)_.+|^\d{4}-\d{2}-\d{2}$", k) for k in value):
             return {"type": "object", "additionalProperties": True}
-        return {"type": "object", "properties": {k: literal_shape(v) for k, v in value.items()}}
+        return {"type": "object", "properties": {k: literal_shape(v) for k, v in value.items()
+                                                  if not k.startswith("custom.")}}
     if isinstance(value, list):
         return {"type": "array", "items": merge_shapes([literal_shape(entry) for entry in value])}
     if isinstance(value, bool):
@@ -166,7 +193,14 @@ class Models:
         self.classes[unique] = None
         properties = []
         used_names = {unique, "AdditionalFields"}
-        for wire, schema in sorted(shape["properties"].items()):
+        schemas = {wire: schema for wire, schema in shape["properties"].items() if not wire.startswith("custom.")}
+        legacy = {
+            LEGACY_CUSTOM_FIELD_IDS[index]: ({"type": kind, "items": {"type": "string"}} if kind == "array"
+                                             else {"type": kind} if kind else {})
+            for index, kind in LEGACY_CUSTOM_FIELDS.get(unique, {}).items()
+        }
+        schemas.update(legacy)
+        for wire, schema in sorted(schemas.items()):
             prop = pascal(wire)
             while prop in used_names:
                 prop += "Value"
@@ -175,6 +209,9 @@ class Models:
             constant = schema.get("const")
             notes = [f'    /// <summary>The <c>{html.escape(wire)}</c> field.</summary>',
                      f"    [JsonPropertyName({literal(wire)})]"]
+            if wire in legacy:
+                notes[0] = "    /// <summary>1.0 compatibility property for a field from a Close example payload.</summary>"
+                notes[1:1] = ["    /// <exclude />", "    [EditorBrowsable(EditorBrowsableState.Never)]"]
             initialized = ""
             if isinstance(constant, str) and value_type == "string":
                 initialized = " = " + literal(constant) + ";"
@@ -192,11 +229,36 @@ class Models:
             "    [JsonExtensionData]\n"
             "    public Dictionary<string, JsonElement>? AdditionalFields { get; set; }"
         )
+        if unique in CUSTOM_FIELD_REQUESTS:
+            properties.append(
+                '    /// <summary>Sets an organization-defined field. Supply a JSON null to clear it in an update.</summary>\n'
+                '    public void SetCustomField(string fieldId, JsonElement value) =>\n'
+                '        (AdditionalFields ??= new(StringComparer.Ordinal))[CloseObject.CustomFieldName(fieldId)] = value.Clone();'
+            )
+        if unique in CUSTOM_FIELD_RESPONSES:
+            properties.append(self.custom_field_reader(legacy))
         self.classes[unique] = (
             f"/// <summary>Fields in the Close {unique} payload.</summary>\n"
             f"public sealed class {unique}\n{{\n" + "\n\n".join(properties) + "\n}"
         )
         return result
+
+    def custom_field_reader(self, legacy):
+        documentation = "    /// <summary>Gets an organization-defined field by its Close cf_ identifier.</summary>\n"
+        signature = "    public bool TryGetCustomField(string fieldId, out JsonElement value)"
+        if not legacy:
+            return documentation + signature + " => CloseObject.TryReadCustomField(AdditionalFields, fieldId, out value);"
+        checks = [
+            f"            case {literal(wire)} when {pascal(wire)} is {{ }} previous:\n"
+            f"                value = JsonSerializer.SerializeToElement(previous, EndpointJson.Type<"
+            f"{'IReadOnlyList<string>' if schema.get('type') == 'array' else 'string'}>());\n"
+            "                return true;"
+            for wire, schema in sorted(legacy.items())
+        ]
+        return (documentation + signature + "\n    {\n"
+                "        if (CloseObject.TryReadCustomField(AdditionalFields, fieldId, out value)) return true;\n"
+                "        switch (CloseObject.CustomFieldName(fieldId))\n        {\n" + "\n".join(checks)
+                + "\n            default: return false;\n        }\n    }")
 
     def contract(self, schema, name, patch=False):
         field = self.shape_type(schema, name, patch)
@@ -204,7 +266,7 @@ class Models:
         return field
 
     def json_context(self):
-        declarations = set(self.register)
+        declarations = self.register | {"string", "IReadOnlyList<string>"}
         for item in self.optional_fields:
             declarations.add(item + "?" if item in {"bool", "int", "long", "decimal", "DateOnly", "DateTimeOffset", "JsonElement"} else item)
         converters = ["typeof(CloseTimestampConverter)"] + [
@@ -225,7 +287,7 @@ class Models:
 
     def records(self):
         return (
-            HEADER + "using System.Text.Json;\nusing System.Text.Json.Serialization;\n"
+            HEADER + "using System.ComponentModel;\nusing System.Text.Json;\nusing System.Text.Json.Serialization;\n"
             "using ApiModels = Close.DotNet.Models;\n\nnamespace Close.DotNet.Models;\n\n" +
             "\n\n".join(self.classes[name] for name in sorted(self.classes)) + "\n"
         )
@@ -241,7 +303,7 @@ def operations(spec, rows):
         yield row, op
 
 
-def build_operation(row, op, models):
+def build_operation(row, op, models, query_options):
     tag, verb, route, operation_id, reference = (row[key] for key in ("resource", "method", "route", "operation_id", "reference"))
     group = group_name(tag)
     method = method_name(tag, operation_id)
@@ -254,6 +316,7 @@ def build_operation(row, op, models):
         verb == "GET" and method.startswith("List") and {"_skip", "_limit"} <= documented_parameters
         and set(response_fields) == {"data", "has_more"} and response_fields["data"].get("type") == "array"
     )
+    filter_type = query_options.add_operation(row, op, is_offset_list)
     stream_method = method
     if is_offset_list:
         method = method.removesuffix("Async") + "PageAsync"
@@ -305,6 +368,8 @@ def build_operation(row, op, models):
                           '"2026-01-01"' if response_type == "DateOnly" else
                           '"2026-01-01T00:00:00Z"' if response_type == "DateTimeOffset" else "{}")
     summary = (f'    /// <summary>Calls <see href="{reference}">{verb} {route}</see>.</summary>\n')
+    if filter_type:
+        summary += f'    /// <remarks>Pass <see cref="{filter_type}"/> for typed filters.</remarks>\n'
     for wire in required_query:
         summary += f'    /// <param name="{camel(wire)}">Required Close {wire} query parameter.</param>\n'
     if required_query:
@@ -381,6 +446,7 @@ def main():
         columns = reader.fieldnames
 
     models = Models(spec["components"]["schemas"])
+    query_options = QueryOptions(spec, pascal, group_name, method_name, literal)
     groups, cases = defaultdict(list), []
     pending_operations = [(row, op) for row, op in operations(spec, rows)
                           if not row["sdk_method"] or row["generation"] == "generated"]
@@ -391,8 +457,12 @@ def main():
         if "$ref" in schema:
             models.patch_components.add(schema["$ref"].rsplit("/", 1)[1])
 
+    for row, op in operations(spec, rows):
+        if row["generation"] == "manual":
+            query_options.add_operation(row, op, row["operation_id"] in CORE_OFFSET_LISTS)
+
     for row, op in pending_operations:
-        group, method, source, test = build_operation(row, op, models)
+        group, method, source, test = build_operation(row, op, models, query_options)
         groups[group].append(source)
         cases.append(test)
         row["sdk_method"] = group + "." + method
@@ -403,6 +473,7 @@ def main():
 
     outputs = {
         LIBRARY / "EndpointClients.g.cs": render_clients(groups),
+        LIBRARY / "EndpointQueryOptions.g.cs": query_options.render(HEADER),
         LIBRARY / "EndpointModels.g.cs": models.records(),
         LIBRARY / "EndpointJson.g.cs": models.json_context(),
         TESTS / "GeneratedEndpointContracts.g.cs": render_tests(cases),

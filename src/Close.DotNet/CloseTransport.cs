@@ -115,8 +115,7 @@ internal sealed class CloseTransport(HttpClient httpClient, CloseCredential cred
         if (query is null || query.Count == 0) return uri;
         var builder = new UriBuilder(uri)
         {
-            Query = string.Join('&', query.Where(entry => entry.Value is not null).Select(entry =>
-                $"{Uri.EscapeDataString(entry.Key)}={Uri.EscapeDataString(entry.Value!)}"))
+            Query = CloseQueryParameters.Encode(query)
         };
         return builder.Uri;
     }

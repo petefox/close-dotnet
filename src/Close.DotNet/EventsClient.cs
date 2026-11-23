@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace Close.DotNet;
 
 /// <summary>Options for one page of the Close event log.</summary>
-public sealed class CloseEventListOptions : CloseRequestOptions
+public sealed partial class CloseEventListOptions : CloseRequestOptions
 {
     /// <summary>Opaque pagination cursor returned by Close.</summary>
     public string? Cursor { get; init; }

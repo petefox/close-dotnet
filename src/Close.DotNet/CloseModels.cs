@@ -16,10 +16,14 @@ public abstract class CloseObject
 
     /// <summary>Gets the value of a custom field specified by its cf_ identifier.</summary>
     public bool TryGetCustomField(string fieldId, out JsonElement value)
+        => TryReadCustomField(AdditionalFields, fieldId, out value);
+
+    internal static bool TryReadCustomField(
+        Dictionary<string, JsonElement>? fields, string fieldId, out JsonElement value)
     {
         var name = CustomFieldName(fieldId);
         value = default;
-        return AdditionalFields?.TryGetValue(name, out value) == true;
+        return fields?.TryGetValue(name, out value) == true;
     }
 
     internal static string CustomFieldName(string fieldId)

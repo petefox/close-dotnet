@@ -244,6 +244,7 @@ public sealed class ActivitiesClient
     internal ActivitiesClient(CloseTransport transport) => this.transport = transport;
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/activities/list">GET /activity/</see>.</summary>
+    /// <remarks>Pass <see cref="ActivitiesListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.ActivitiesListItem>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.ActivitiesListItem>(transport, "activity/", options, cancellationToken);
 
@@ -375,6 +376,7 @@ public sealed class BulkEmailsClient
     internal BulkEmailsClient(CloseTransport transport) => this.transport = transport;
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/bulk-actions/email/list">GET /bulk_action/email/</see>.</summary>
+    /// <remarks>Pass <see cref="BulkEmailsListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.BulkEmailAction>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.BulkEmailAction>(transport, "bulk_action/email/", options, cancellationToken);
 
@@ -425,6 +427,7 @@ public sealed class CallsClient
         EndpointTransport.SendAsync<JsonElement>(transport, HttpMethod.Delete, $"activity/call/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/activities/calls/list">GET /activity/call/</see>.</summary>
+    /// <remarks>Pass <see cref="CallsListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.CallActivity>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.CallActivity>(transport, "activity/call/", options, cancellationToken);
 
@@ -456,6 +459,7 @@ public sealed class CommentsClient
         EndpointTransport.SendWithoutBodyAsync(transport, HttpMethod.Delete, $"comment/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/comments/list">GET /comment/</see>.</summary>
+    /// <remarks>Pass <see cref="CommentsListOptions"/> for typed filters.</remarks>
     public Task<ApiModels.CommentsListResponse> ListAsync(CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<ApiModels.CommentsListResponse>(transport, HttpMethod.Get, "comment/", options?.ToQuery(), null, cancellationToken);
 
@@ -464,6 +468,7 @@ public sealed class CommentsClient
         EndpointTransport.SendAsync<ApiModels.CommentsGetResponse>(transport, HttpMethod.Get, $"comment/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/comments/list-threads">GET /comment_thread/</see>.</summary>
+    /// <remarks>Pass <see cref="CommentsListThreadsOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.CommentsListThreadsItem>> ListThreadsPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.CommentsListThreadsItem>(transport, "comment_thread/", options, cancellationToken);
 
@@ -491,6 +496,7 @@ public sealed class ConnectedAccountsClient
     internal ConnectedAccountsClient(CloseTransport transport) => this.transport = transport;
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/connected-accounts/list">GET /connected_account/</see>.</summary>
+    /// <remarks>Pass <see cref="ConnectedAccountsListOptions"/> for typed filters.</remarks>
     public Task<ApiModels.ConnectedAccountsListResponse> ListAsync(CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<ApiModels.ConnectedAccountsListResponse>(transport, HttpMethod.Get, "connected_account/", options?.ToQuery(), null, cancellationToken);
 
@@ -537,6 +543,7 @@ public sealed class CreationActivitiesClient
     internal CreationActivitiesClient(CloseTransport transport) => this.transport = transport;
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/activities/creations/list">GET /activity/created/</see>.</summary>
+    /// <remarks>Pass <see cref="CreationActivitiesListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.CreatedActivity>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.CreatedActivity>(transport, "activity/created/", options, cancellationToken);
 
@@ -560,6 +567,7 @@ public sealed class CustomActivitiesClient
         EndpointTransport.SendAsync<JsonElement>(transport, HttpMethod.Delete, $"activity/custom/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/activities/custom-activities/list">GET /activity/custom/</see>.</summary>
+    /// <remarks>Pass <see cref="CustomActivitiesListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.CustomActivity>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.CustomActivity>(transport, "activity/custom/", options, cancellationToken);
 
@@ -687,6 +695,7 @@ public sealed class CustomObjectsClient
         EndpointTransport.SendWithoutBodyAsync(transport, HttpMethod.Delete, $"custom_object/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/custom-objects/list">GET /custom_object/</see>.</summary>
+    /// <remarks>Pass <see cref="CustomObjectsListOptions"/> for typed filters.</remarks>
     /// <param name="leadId">Required Close lead_id query parameter.</param>
     /// <param name="options">Additional query options.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
@@ -713,6 +722,7 @@ public sealed class DialersClient
     internal DialersClient(CloseTransport transport) => this.transport = transport;
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/dialers/list">GET /dialer/</see>.</summary>
+    /// <remarks>Pass <see cref="DialersListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.DialersListItem>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.DialersListItem>(transport, "dialer/", options, cancellationToken);
 
@@ -721,6 +731,7 @@ public sealed class DialersClient
         EndpointTransport.StreamAsync<ApiModels.DialersListItem>(transport, "dialer/", options, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/dialers/get">GET /dialer/{id}/</see>.</summary>
+    /// <remarks>Pass <see cref="DialersGetOptions"/> for typed filters.</remarks>
     public Task<ApiModels.DialersGetResponse> GetAsync(string id, CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<ApiModels.DialersGetResponse>(transport, HttpMethod.Get, $"dialer/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 }
@@ -736,6 +747,7 @@ public sealed class EmailTemplatesClient
         EndpointTransport.SendAsync<JsonElement>(transport, HttpMethod.Delete, $"email_template/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/email-templates/list">GET /email_template/</see>.</summary>
+    /// <remarks>Pass <see cref="EmailTemplatesListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.EmailTemplatesListItem>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.EmailTemplatesListItem>(transport, "email_template/", options, cancellationToken);
 
@@ -744,10 +756,12 @@ public sealed class EmailTemplatesClient
         EndpointTransport.StreamAsync<ApiModels.EmailTemplatesListItem>(transport, "email_template/", options, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/email-templates/get">GET /email_template/{id}/</see>.</summary>
+    /// <remarks>Pass <see cref="EmailTemplatesGetOptions"/> for typed filters.</remarks>
     public Task<ApiModels.EmailTemplatesGetResponse> GetAsync(string id, CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<ApiModels.EmailTemplatesGetResponse>(transport, HttpMethod.Get, $"email_template/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/email-templates/render">GET /email_template/{id}/render/</see>.</summary>
+    /// <remarks>Pass <see cref="EmailTemplatesRenderOptions"/> for typed filters.</remarks>
     public Task<ApiModels.EmailTemplatesRenderResponse> RenderAsync(string id, CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<ApiModels.EmailTemplatesRenderResponse>(transport, HttpMethod.Get, $"email_template/{CloseRoutes.Segment(id)}/render/", options?.ToQuery(), null, cancellationToken);
 
@@ -771,6 +785,7 @@ public sealed class EmailThreadsClient
         EndpointTransport.SendAsync<JsonElement>(transport, HttpMethod.Delete, $"activity/emailthread/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/activities/email-threads/list">GET /activity/emailthread/</see>.</summary>
+    /// <remarks>Pass <see cref="EmailThreadsListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.EmailThreadActivity>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.EmailThreadActivity>(transport, "activity/emailthread/", options, cancellationToken);
 
@@ -794,6 +809,7 @@ public sealed class EmailsClient
         EndpointTransport.SendAsync<JsonElement>(transport, HttpMethod.Delete, $"activity/email/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/activities/emails/list">GET /activity/email/</see>.</summary>
+    /// <remarks>Pass <see cref="EmailsListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.EmailActivity>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.EmailActivity>(transport, "activity/email/", options, cancellationToken);
 
@@ -887,6 +903,7 @@ public sealed class FormSubmissionsClient
         EndpointTransport.SendAsync<JsonElement>(transport, HttpMethod.Delete, $"activity/form_submission/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/activities/form-submissions/list">GET /activity/form_submission/</see>.</summary>
+    /// <remarks>Pass <see cref="FormSubmissionsListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.FormSubmissionActivity>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.FormSubmissionActivity>(transport, "activity/form_submission/", options, cancellationToken);
 
@@ -906,6 +923,7 @@ public sealed class FormsClient
     internal FormsClient(CloseTransport transport) => this.transport = transport;
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/forms/list">GET /form/</see>.</summary>
+    /// <remarks>Pass <see cref="FormsListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.Form>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.Form>(transport, "form/", options, cancellationToken);
 
@@ -964,6 +982,7 @@ public sealed class ImportUpdateActivitiesClient
         EndpointTransport.SendAsync<JsonElement>(transport, HttpMethod.Delete, $"activity/import_update/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/activities/import-updates/list">GET /activity/import_update/</see>.</summary>
+    /// <remarks>Pass <see cref="ImportUpdateActivitiesListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.ImportUpdateActivity>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.ImportUpdateActivity>(transport, "activity/import_update/", options, cancellationToken);
 
@@ -1041,6 +1060,7 @@ public sealed class LeadMergeActivitiesClient
     internal LeadMergeActivitiesClient(CloseTransport transport) => this.transport = transport;
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/activities/lead-merges/list">GET /activity/lead_merge/</see>.</summary>
+    /// <remarks>Pass <see cref="LeadMergeActivitiesListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.LeadMergeActivity>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.LeadMergeActivity>(transport, "activity/lead_merge/", options, cancellationToken);
 
@@ -1064,6 +1084,7 @@ public sealed class LeadStatusChangesClient
         EndpointTransport.SendAsync<JsonElement>(transport, HttpMethod.Delete, $"activity/status_change/lead/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/activities/lead-status-changes/list">GET /activity/status_change/lead/</see>.</summary>
+    /// <remarks>Pass <see cref="LeadStatusChangesListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.LeadStatusChangeActivity>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.LeadStatusChangeActivity>(transport, "activity/status_change/lead/", options, cancellationToken);
 
@@ -1137,6 +1158,7 @@ public sealed class MeetingsClient
         EndpointTransport.SendAsync<JsonElement>(transport, HttpMethod.Delete, $"activity/meeting/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/activities/meetings/list">GET /activity/meeting/</see>.</summary>
+    /// <remarks>Pass <see cref="MeetingsListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.MeetingActivity>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.MeetingActivity>(transport, "activity/meeting/", options, cancellationToken);
 
@@ -1230,6 +1252,7 @@ public sealed class OpportunityStatusChangesClient
         EndpointTransport.SendAsync<JsonElement>(transport, HttpMethod.Delete, $"activity/status_change/opportunity/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/activities/opportunity-status-changes/list">GET /activity/status_change/opportunity/</see>.</summary>
+    /// <remarks>Pass <see cref="OpportunityStatusChangesListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.OpportunityStatusChangeActivity>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.OpportunityStatusChangeActivity>(transport, "activity/status_change/opportunity/", options, cancellationToken);
 
@@ -1280,10 +1303,12 @@ public sealed class OrganizationsClient
     internal OrganizationsClient(CloseTransport transport) => this.transport = transport;
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/organizations/get">GET /organization/{id}/</see>.</summary>
+    /// <remarks>Pass <see cref="OrganizationsGetOptions"/> for typed filters.</remarks>
     public Task<ApiModels.OrganizationsGetResponse> GetAsync(string id, CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<ApiModels.OrganizationsGetResponse>(transport, HttpMethod.Get, $"organization/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/organizations/update">PUT /organization/{id}/</see>.</summary>
+    /// <remarks>Pass <see cref="OrganizationsUpdateOptions"/> for typed filters.</remarks>
     public Task<ApiModels.OrganizationsUpdateResponse> UpdateAsync(string id, ApiModels.Organization request, CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<ApiModels.OrganizationsUpdateResponse>(transport, HttpMethod.Put, $"organization/{CloseRoutes.Segment(id)}/", options?.ToQuery(), EndpointTransport.Serialize(request), cancellationToken);
 }
@@ -1330,6 +1355,7 @@ public sealed class PhoneNumbersClient
         EndpointTransport.SendAsync<JsonElement>(transport, HttpMethod.Delete, $"phone_number/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/phone-numbers/list">GET /phone_number/</see>.</summary>
+    /// <remarks>Pass <see cref="PhoneNumbersListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.PhoneNumber>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.PhoneNumber>(transport, "phone_number/", options, cancellationToken);
 
@@ -1388,6 +1414,7 @@ public sealed class PlaybooksClient
         EndpointTransport.SendWithoutBodyAsync(transport, HttpMethod.Delete, $"playbook/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/playbooks/list">GET /playbook/</see>.</summary>
+    /// <remarks>Pass <see cref="PlaybooksListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.Playbook>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.Playbook>(transport, "playbook/", options, cancellationToken);
 
@@ -1427,18 +1454,22 @@ public sealed class ReportingClient
         EndpointTransport.SendAsync<ApiModels.ReportingListActivityMetricsResponse>(transport, HttpMethod.Get, "report/activity/metrics/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/reporting/get-custom">GET /report/custom/{org_id}/</see>.</summary>
+    /// <remarks>Pass <see cref="ReportingGetCustomOptions"/> for typed filters.</remarks>
     public Task<JsonElement> GetCustomAsync(string orgId, CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<JsonElement>(transport, HttpMethod.Get, $"report/custom/{CloseRoutes.Segment(orgId)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/reporting/get-sent-emails">GET /report/sent_emails/{org_id}/</see>.</summary>
+    /// <remarks>Pass <see cref="ReportingGetSentEmailsOptions"/> for typed filters.</remarks>
     public Task<ApiModels.ReportingGetSentEmailsResponse> GetSentEmailsAsync(string orgId, CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<ApiModels.ReportingGetSentEmailsResponse>(transport, HttpMethod.Get, $"report/sent_emails/{CloseRoutes.Segment(orgId)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/reporting/get-lead-statuses">GET /report/statuses/lead/{org_id}/</see>.</summary>
+    /// <remarks>Pass <see cref="ReportingGetLeadStatusesOptions"/> for typed filters.</remarks>
     public Task<ApiModels.ReportingGetLeadStatusesResponse> GetLeadStatusesAsync(string orgId, CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<ApiModels.ReportingGetLeadStatusesResponse>(transport, HttpMethod.Get, $"report/statuses/lead/{CloseRoutes.Segment(orgId)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/reporting/get-opportunity-statuses">GET /report/statuses/opportunity/{org_id}/</see>.</summary>
+    /// <remarks>Pass <see cref="ReportingGetOpportunityStatusesOptions"/> for typed filters.</remarks>
     public Task<ApiModels.ReportingGetOpportunityStatusesResponse> GetOpportunityStatusesAsync(string orgId, CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<ApiModels.ReportingGetOpportunityStatusesResponse>(transport, HttpMethod.Get, $"report/statuses/opportunity/{CloseRoutes.Segment(orgId)}/", options?.ToQuery(), null, cancellationToken);
 
@@ -1552,6 +1583,7 @@ public sealed class SendAsClient
     internal SendAsClient(CloseTransport transport) => this.transport = transport;
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/send-as/delete-by-user">DELETE /send_as/</see>.</summary>
+    /// <remarks>Pass <see cref="SendAsDeleteByUserOptions"/> for typed filters.</remarks>
     public Task DeleteByUserAsync(CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendWithoutBodyAsync(transport, HttpMethod.Delete, "send_as/", options?.ToQuery(), null, cancellationToken);
 
@@ -1560,6 +1592,7 @@ public sealed class SendAsClient
         EndpointTransport.SendWithoutBodyAsync(transport, HttpMethod.Delete, $"send_as/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/send-as/list">GET /send_as/</see>.</summary>
+    /// <remarks>Pass <see cref="SendAsListOptions"/> for typed filters.</remarks>
     public Task<ApiModels.SendAsListResponse> ListAsync(CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<ApiModels.SendAsListResponse>(transport, HttpMethod.Get, "send_as/", options?.ToQuery(), null, cancellationToken);
 
@@ -1603,6 +1636,7 @@ public sealed class SequencesClient
         EndpointTransport.SendAsync<ApiModels.SequencesGetResponse>(transport, HttpMethod.Get, $"sequence/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/sequences/list-subscriptions">GET /sequence_subscription/</see>.</summary>
+    /// <remarks>Pass <see cref="SequencesListSubscriptionsOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.SequencesListSubscriptionsItem>> ListSubscriptionsPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.SequencesListSubscriptionsItem>(transport, "sequence_subscription/", options, cancellationToken);
 
@@ -1685,6 +1719,7 @@ public sealed class SmartViewsClient
         EndpointTransport.SendAsync<JsonElement>(transport, HttpMethod.Delete, $"saved_search/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/smart-views/list">GET /saved_search/</see>.</summary>
+    /// <remarks>Pass <see cref="SmartViewsListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.SavedSearch>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.SavedSearch>(transport, "saved_search/", options, cancellationToken);
 
@@ -1716,6 +1751,7 @@ public sealed class SmsClient
         EndpointTransport.SendAsync<JsonElement>(transport, HttpMethod.Delete, $"activity/sms/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/activities/sms/list">GET /activity/sms/</see>.</summary>
+    /// <remarks>Pass <see cref="SmsListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.SMSActivity>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.SMSActivity>(transport, "activity/sms/", options, cancellationToken);
 
@@ -1728,6 +1764,7 @@ public sealed class SmsClient
         EndpointTransport.SendAsync<ApiModels.SMSActivity>(transport, HttpMethod.Get, $"activity/sms/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/activities/sms/create">POST /activity/sms/</see>.</summary>
+    /// <remarks>Pass <see cref="SmsCreateOptions"/> for typed filters.</remarks>
     public Task<ApiModels.SMSActivity> CreateAsync(ApiModels.CreateSMSActivity request, CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<ApiModels.SMSActivity>(transport, HttpMethod.Post, "activity/sms/", options?.ToQuery(), EndpointTransport.Serialize(request), cancellationToken);
 
@@ -1755,10 +1792,12 @@ public sealed class SmsTemplatesClient
         EndpointTransport.StreamAsync<ApiModels.SmsTemplatesListItem>(transport, "sms_template/", options, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/sms-templates/get">GET /sms_template/{id}/</see>.</summary>
+    /// <remarks>Pass <see cref="SmsTemplatesGetOptions"/> for typed filters.</remarks>
     public Task<ApiModels.SmsTemplatesGetResponse> GetAsync(string id, CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<ApiModels.SmsTemplatesGetResponse>(transport, HttpMethod.Get, $"sms_template/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/sms-templates/render">GET /sms_template/{id}/render/</see>.</summary>
+    /// <remarks>Pass <see cref="SmsTemplatesRenderOptions"/> for typed filters.</remarks>
     /// <param name="leadId">Required Close lead_id query parameter.</param>
     /// <param name="id">Close path parameter.</param>
     /// <param name="options">Additional query options.</param>
@@ -1809,6 +1848,7 @@ public sealed class TaskCompletionActivitiesClient
         EndpointTransport.SendAsync<JsonElement>(transport, HttpMethod.Delete, $"activity/task_completed/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/activities/task-completions/list">GET /activity/task_completed/</see>.</summary>
+    /// <remarks>Pass <see cref="TaskCompletionActivitiesListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.TaskCompletedActivity>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.TaskCompletedActivity>(transport, "activity/task_completed/", options, cancellationToken);
 
@@ -1824,6 +1864,7 @@ public sealed class TaskCompletionActivitiesClient
 public sealed partial class TasksClient
 {
     /// <summary>Calls <see href="https://developer.close.com/api/resources/tasks/bulk-update">PUT /task/</see>.</summary>
+    /// <remarks>Pass <see cref="TasksBulkUpdateOptions"/> for typed filters.</remarks>
     public Task<ApiModels.BulkUpdateTasksResult> BulkUpdateAsync(ApiModels.BulkUpdateTasks request, CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<ApiModels.BulkUpdateTasksResult>(Transport, HttpMethod.Put, "task/", options?.ToQuery(), EndpointTransport.Serialize(request), cancellationToken);
 }
@@ -1850,6 +1891,7 @@ public sealed class UnsubscribedEmailsClient
 public sealed partial class UsersClient
 {
     /// <summary>Calls <see href="https://developer.close.com/api/resources/users/list">GET /user/</see>.</summary>
+    /// <remarks>Pass <see cref="UsersListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.UsersListItem>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.UsersListItem>(transport, "user/", options, cancellationToken);
 
@@ -1858,10 +1900,12 @@ public sealed partial class UsersClient
         EndpointTransport.StreamAsync<ApiModels.UsersListItem>(transport, "user/", options, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/users/list-availabilities">GET /user/availability/</see>.</summary>
+    /// <remarks>Pass <see cref="UsersListAvailabilitiesOptions"/> for typed filters.</remarks>
     public Task<ApiModels.UsersListAvailabilitiesResponse> ListAvailabilitiesAsync(CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<ApiModels.UsersListAvailabilitiesResponse>(transport, HttpMethod.Get, "user/availability/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/users/get">GET /user/{id}/</see>.</summary>
+    /// <remarks>Pass <see cref="UsersGetOptions"/> for typed filters.</remarks>
     public Task<ApiModels.UsersGetResponse> GetAsync(string id, CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<ApiModels.UsersGetResponse>(transport, HttpMethod.Get, $"user/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 }
@@ -1877,6 +1921,7 @@ public sealed class WhatsappMessagesClient
         EndpointTransport.SendAsync<JsonElement>(transport, HttpMethod.Delete, $"activity/whatsapp_message/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/activities/whatsapp/list">GET /activity/whatsapp_message/</see>.</summary>
+    /// <remarks>Pass <see cref="WhatsappMessagesListOptions"/> for typed filters.</remarks>
     public Task<ClosePage<ApiModels.WhatsAppMessageActivity>> ListPageAsync(CloseListOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.ListPageAsync<ApiModels.WhatsAppMessageActivity>(transport, "activity/whatsapp_message/", options, cancellationToken);
 
@@ -1889,6 +1934,7 @@ public sealed class WhatsappMessagesClient
         EndpointTransport.SendAsync<ApiModels.WhatsAppMessageActivity>(transport, HttpMethod.Get, $"activity/whatsapp_message/{CloseRoutes.Segment(id)}/", options?.ToQuery(), null, cancellationToken);
 
     /// <summary>Calls <see href="https://developer.close.com/api/resources/activities/whatsapp/create">POST /activity/whatsapp_message/</see>.</summary>
+    /// <remarks>Pass <see cref="WhatsappMessagesCreateOptions"/> for typed filters.</remarks>
     public Task<ApiModels.WhatsAppMessageActivity> CreateAsync(ApiModels.CreateWhatsAppMessage request, CloseRequestOptions? options = null, CancellationToken cancellationToken = default) =>
         EndpointTransport.SendAsync<ApiModels.WhatsAppMessageActivity>(transport, HttpMethod.Post, "activity/whatsapp_message/", options?.ToQuery(), EndpointTransport.Serialize(request), cancellationToken);
 

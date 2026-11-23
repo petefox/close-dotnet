@@ -27,7 +27,7 @@ var subscription = await close.Webhooks.CreateAsync(new()
 Install the optional ASP.NET Core integration and set `Close:WebhookSigningKey` to the subscription's `SignatureKey` in user secrets or the production secret store.
 
 ~~~bash
-dotnet add package Close.DotNet.AspNetCore --version 1.0.0
+dotnet add package Close.DotNet.AspNetCore --version 1.1.0
 ~~~
 
 ~~~csharp

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0
+
+- Add typed filter options for documented query parameters while retaining `Query` for advanced filters.
+- Add organization-defined field helpers to custom object and activity models.
+- Hide example-only custom object properties from IntelliSense while preserving their 1.0 signatures and wire names.
+
 ## 1.0.0
 
 - Add named methods for all 308 documented Close REST operations.

@@ -19,19 +19,22 @@ public class CloseRequestOptions
     /// <summary>Close field names to return. Missing response fields deserialize to null.</summary>
     public IReadOnlyList<string>? Fields { get; init; }
 
-    /// <summary>Additional Close query parameters, with unescaped names and values.</summary>
+    /// <summary>Additional Close query parameters, with unescaped names and values. A specified typed filter takes precedence for the same key.</summary>
     public IReadOnlyDictionary<string, string?>? Query { get; init; }
 
     internal Dictionary<string, string?> ToQuery()
     {
-        var query = Query is null ? [] : new Dictionary<string, string?>(Query, StringComparer.Ordinal);
+        var query = new CloseQueryParameters(Query);
+        ApplyFilters(query);
         if (Fields is { Count: > 0 }) query["_fields"] = string.Join(',', Fields);
         return query;
     }
+
+    internal virtual void ApplyFilters(CloseQueryParameters query) { }
 }
 
 /// <summary>Filters and starting position for an offset-paginated list.</summary>
-public sealed class CloseListOptions : CloseRequestOptions
+public class CloseListOptions : CloseRequestOptions
 {
     /// <summary>Requested page size. Close enforces resource-specific limits.</summary>
     public int? Limit { get; init; }

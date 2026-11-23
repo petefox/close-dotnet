@@ -5,7 +5,7 @@ An independent C# SDK for the [Close CRM REST API](https://developer.close.com/)
 ## Install
 
 ~~~bash
-dotnet add package Close.DotNet --version 1.0.0
+dotnet add package Close.DotNet --version 1.1.0
 ~~~
 
 ## Make your first request
@@ -41,6 +41,7 @@ The SDK has named methods for all 308 documented REST operations, plus OAuth, we
 ASP.NET Core apps can install `Close.DotNet.AspNetCore` to register a signed webhook endpoint with `app.MapCloseWebhook(...)`.
 
 - [Tutorials and C# API reference](https://petefox.github.io/close-dotnet/)
+- [Typed filters and custom field values](https://petefox.github.io/close-dotnet/guides/filters.html)
 - [Endpoint coverage](https://github.com/petefox/close-dotnet/blob/main/docs/coverage.md)
 - [Runnable samples](https://github.com/petefox/close-dotnet/tree/main/samples)
 - [Contributing](https://github.com/petefox/close-dotnet/blob/main/CONTRIBUTING.md)

@@ -14,3 +14,4 @@
 *.pfx
 *.p12
 *.key
+/scripts/__pycache__/

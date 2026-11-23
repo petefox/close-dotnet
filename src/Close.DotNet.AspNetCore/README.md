@@ -3,7 +3,7 @@
 Add a signed Close webhook endpoint to an ASP.NET Core app on .NET 10 or 11.
 
 ~~~bash
-dotnet add package Close.DotNet.AspNetCore --version 1.0.0
+dotnet add package Close.DotNet.AspNetCore --version 1.1.0
 ~~~
 
 ~~~csharp

@@ -2,6 +2,8 @@
   href: index.md
 - name: Core CRM records
   href: guides/crm.md
+- name: Typed filters and custom fields
+  href: guides/filters.md
 - name: Advanced search
   href: guides/search.md
 - name: OAuth in ASP.NET Core
